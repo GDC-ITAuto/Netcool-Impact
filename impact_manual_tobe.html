@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload and Comparison Report</title>
+    <!-- CSS Styles -->
+    <style>
+        /* Basic styling for the body */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-image: url('https://www.ibm.com/design/language/static/d364f8541a48fa723bb502e883144239/040c5/2306_73_IDL_gallery.jpg');
+            background-size: cover;
+            font-size: 15px; /* Adjust the font size */
+            overflow-x: hidden; /* Hide horizontal scrollbar initially */
+        }
+
+        /* Styling for the container */
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+
+        /* Styling for sections */
+        .section {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+
+        th, td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+
+        /* Styling for the report section */
+        #report-section {
+            display: none;
+        }
+
+        /* Styling for the input section */
+        #input-section {
+            display: none;
+        }
+
+        /* Styling for the report grid */
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Two columns */
+            gap: 15px; /* Space between boxes */
+        }
+
+        /* Styling for the report boxes */
+        .report-box {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Styling for the report text */
+        .report-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Styling for parameter, entered, and expected values */
+        .report-text span {
+            display: block;
+        }
+
+        .report-text .parameter {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .report-text .entered-value,
+        .report-text .expected-value {
+            color: #555;
+        }
+
+        /* Add a visual separator between entered and expected values */
+        .separator {
+            margin: 10px 0;
+            height: 1px;
+            background-color: #ddd;
+        }
+
+        /* Class for matched and mismatched data */
+        .match {
+            color: green;
+        }
+
+        .mismatch {
+            color: red;
+        }
+
+        /* Styling for the button */
+        .submit-button, .back-button {
+            display: block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        /* Styling for list items */
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        /* Styling for input fields */
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        /* Styling for labels */
+        label {
+            font-weight: bold;
+        }
+
+        /* Styling for footer */
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #555;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Metric descriptions section -->
+        <div class="section" id="metrics-section">
+            <h3>Metric Descriptions</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Netcool Impact Version</td>
+                        <td>Most recent version of Netcool Impact</td>
+                    </tr>
+                    <tr>
+                        <td>LDAP Integration</td>
+                        <td>TRUE: Netcool Impact is integrated with LDAP<br>FALSE: Netcool Impact is either using the Netcool Omnibus or file-based registry for user authentication</td>
+                    </tr>
+                    <tr>
+                        <td>Policies Count</td>
+                        <td>Count of number of policies created in Netcool Impact</td>
+                    </tr>
+                    <tr>
+                        <td>OpViews Count</td>
+                        <td>Count of number of Operator Views created in Netcool Impact</td>
+                    </tr>
+                    <tr>
+                        <td>Impact Server Count</td>
+                        <td>Number of Impact Server instances in the Impact cluster</td>
+                    </tr>
+                    <tr>
+                        <td>Xms</td>
+                        <td>Minimum memory allocation pool for Java Virtual Machine (JVM)</td>
+                    </tr>
+                    <tr>
+                        <td>Xmx</td>
+                        <td>Maximum memory allocation pool for Java Virtual Machine (JVM)</td>
+                    </tr>
+                    <tr>
+                        <td>EventProcessorMinThreads</td>
+                        <td>Minimum number of threads Impact server attempts to run at a time</td>
+                    </tr>
+                    <tr>
+                        <td>EventProcessorMaxThreads</td>
+                        <td>Maximum number of threads Impact server attempts to run at a time</td>
+                    </tr>
+                    <tr>
+                        <td>CPUs</td>
+                        <td>Count of total number of CPUs in the Impact host system</td>
+                    </tr>
+                    <tr>
+                        <td>Memory</td>
+                        <td>Total physical memory available in the Impact host system</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Netcool Impact section -->
+        <div class="section" id="netcool-impact-section">
+            <div id="input-section">
+                <h2>Netcool Impact</h2>
+                <div>
+                    <!-- Deployment Specifications -->
+                    <div>
+                        <ul>
+                            <li>
+                                <label for="version">Version:</label>
+                                <input type="text" id="version" value="">
+                            </li>
+                            <li>
+                                <label for="clustering">Clustering:</label>
+                                <select id="clustering">
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </li>
+                            <li>
+                                <label for="ldap_integration">LDAP Integration:</label>
+                                <select id="ldap_integration">
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </li>
+                            <li>
+                                <label for="sso_with_jazz">SSO with Jazz SM DASH:</label>
+                                <select id="sso_with_jazz">
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Key Performance Indicators -->
+                    <div>
+                        <h2>KPIs</h2>
+                        <ul>
+                            <li>
+                                <label for="impact_policies">Number of Impact Policies:</label>
+                                <input type="text" id="impact_policies" value="">
+                            </li>
+                            <li>
+                                <label for="custom_views">Custom Operated Views Created:</label>
+                                <input type="text" id="custom_views" value="">
+                            </li>
+                            <li>
+                                <label for="impact_extensions">Netcool Impact Extensions:</label>
+                                <select id="impact_extensions">
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </li>
+                            <li>
+                                <label for="third_party_integrations">Third-Party Integrations:</label>
+                                <input type="text" id="third_party_integrations" value="">
+                            </li>
+                            <li>
+                                <label for="jvm_parameters">JVM Parameters:</label>
+                                <div>
+                                    <input type="text" id="xms" placeholder="Xms">
+                                    <input type="text" id="xmx" placeholder="Xmx">
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button id="submitButton" class="submit-button">Submit</button>
+                </div>
+            </div>
+
+            <!-- Comparison report -->
+            <div id="report-section">
+                <h2>Health-check Report of Netcool Impact</h2>
+                <div id="report" class="report-grid">
+                    <!-- Comparison report will be populated here -->
+                </div>
+                <button id="backButton" class="back-button">Back</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get elements
+            const inputSection = document.getElementById("input-section");
+            const reportSection = document.getElementById("report-section");
+            const submitButton = document.getElementById("submitButton");
+            const backButton = document.getElementById("backButton");
+
+            // Show the input section initially
+            inputSection.style.display = "block";
+
+            // Handle submit button click
+            submitButton.addEventListener("click", function () {
+                // Hide the input section and show the report section
+                inputSection.style.display = "none";
+                reportSection.style.display = "block";
+
+                // Get input values
+                const version = document.getElementById("version").value;
+                const clustering = document.getElementById("clustering").value;
+                const ldapIntegration = document.getElementById("ldap_integration").value;
+                const ssoWithJazz = document.getElementById("sso_with_jazz").value;
+                const impactPolicies = document.getElementById("impact_policies").value;
+                const customViews = document.getElementById("custom_views").value;
+                const impactExtensions = document.getElementById("impact_extensions").value;
+                const thirdPartyIntegrations = document.getElementById("third_party_integrations").value;
+                const xms = document.getElementById("xms").value;
+                const xmx = document.getElementById("xmx").value;
+
+                // Create report
+                const report = document.getElementById("report");
+                report.innerHTML = ""; // Clear previous report content
+
+                // Function to create a report box
+                function createReportBox(parameter, enteredValue, expectedValue) {
+                    // Create row div to hold two report boxes
+                    const rowDiv = document.createElement("div");
+                    rowDiv.className = "report-row";
+                    rowDiv.style.display = "flex";
+                    rowDiv.style.gap = "10px"; // Adjust gap between boxes
+                    
+                    // Create box div
+                    const box = document.createElement("div");
+                    box.className = "report-box";
+                    box.style.flex = "1";
+
+                    // Create report text
+                    const reportText = document.createElement("div");
+                    reportText.className = "report-text";
+
+                    // Parameter
+                    const parameterElement = document.createElement("span");
+                    parameterElement.className = "parameter";
+                    parameterElement.textContent = `Parameter: ${parameter}`;
+                    reportText.appendChild(parameterElement);
+
+                    // Entered Value
+                    const enteredValueElement = document.createElement("span");
+                    enteredValueElement.className = "entered-value";
+                    enteredValueElement.textContent = `Entered Value: ${enteredValue}`;
+                    reportText.appendChild(enteredValueElement);
+
+                    // Expected Value
+                    const expectedValueElement = document.createElement("span");
+                    expectedValueElement.className = "expected-value";
+                    expectedValueElement.textContent = `Expected Value: ${expectedValue}`;
+                    reportText.appendChild(expectedValueElement);
+
+                    // Add report text to the box
+                    box.appendChild(reportText);
+
+                    // Add box to the row
+                    rowDiv.appendChild(box);
+
+                    // Add row to the report section
+                    report.appendChild(rowDiv);
+                }
+
+                // Example parameters and expected values
+                const expectedValues = {
+                    "Version": "9.2.5",
+                    "Clustering": "Yes",
+                    "LDAP Integration": "Yes",
+                    "SSO with Jazz SM DASH": "Yes",
+                    "Number of Impact Policies": "10",
+                    "Custom Operated Views Created": "5",
+                    "Netcool Impact Extensions": "Yes",
+                    "Third-Party Integrations": "3",
+                    "JVM Parameters Xms": "512MB",
+                    "JVM Parameters Xmx": "1024MB"
+                };
+
+                // Add report boxes for each parameter
+                createReportBox("Version", version, expectedValues["Version"]);
+                createReportBox("Clustering", clustering, expectedValues["Clustering"]);
+                createReportBox("LDAP Integration", ldapIntegration, expectedValues["LDAP Integration"]);
+                createReportBox("SSO with Jazz SM DASH", ssoWithJazz, expectedValues["SSO with Jazz SM DASH"]);
+                createReportBox("Number of Impact Policies", impactPolicies, expectedValues["Number of Impact Policies"]);
+                createReportBox("Custom Operated Views Created", customViews, expectedValues["Custom Operated Views Created"]);
+                createReportBox("Netcool Impact Extensions", impactExtensions, expectedValues["Netcool Impact Extensions"]);
+                createReportBox("Third-Party Integrations", thirdPartyIntegrations, expectedValues["Third-Party Integrations"]);
+                createReportBox("JVM Parameters Xms", xms, expectedValues["JVM Parameters Xms"]);
+                createReportBox("JVM Parameters Xmx", xmx, expectedValues["JVM Parameters Xmx"]);
+            });
+
+            // Handle back button click
+            backButton.addEventListener("click", function () {
+                // Show the input section and hide the report section
+                inputSection.style.display = "block";
+                reportSection.style.display = "none";
+            });
+        });
+    </script>
+</body>
+</html>
